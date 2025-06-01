@@ -1,0 +1,14 @@
+{
+  "name": "skyfold",
+  "version": "1.0.0",
+  "description": "Yet another discord.js handlers to make your life easier",
+  "license": "MIT",
+  "author": "aggelos007",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@types/node": "^22.15.24",
+    "discord.js": "^14.19.3",
+    "typescript": "^5.8.3"
+  }
+}
