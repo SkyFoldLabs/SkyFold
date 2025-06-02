@@ -2,15 +2,32 @@
   "name": "skyfold",
   "version": "1.0.0",
   "description": "Yet another discord.js handlers to make your life easier",
+  "keywords": [
+    "d.js",
+    "discord.js",
+    "handlers",
+    "discord"
+  ],
+  "homepage": "https://github.com/aggelos-007/SkyFold#readme",
+  "bugs": {
+    "url": "https://github.com/aggelos-007/SkyFold/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aggelos-007/SkyFold.git"
+  },
   "license": "MIT",
   "author": "aggelos007",
   "type": "commonjs",
   "main": "dist/index.js",
-  "devDependencies": {
-    "@types/node": "^22.15.24",
-    "typescript": "^5.8.3"
+  "scripts": {
+    "test": "tsc && node __tests__"
   },
   "dependencies": {
     "discord.js": "^14.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.24",
+    "typescript": "^5.8.3"
   }
 }

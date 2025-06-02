@@ -30,7 +30,7 @@ class Client extends DjsClient<true> {
         this.on("ready", () => putSlashes(this))
     };
 
-    public async eventsLoader(dir:string){
+    public async eventLoader(dir:string){
         const eventNames = new Set<keyof ClientEvents>();
         const events: { name: keyof ClientEvents, code: any }[] = [];
         this.removeAllListeners();

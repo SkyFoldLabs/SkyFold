@@ -31,7 +31,7 @@ class Client extends discord_js_1.Client {
         this.on("ready", () => (0, handlers_1.putSlashes)(this));
     }
     ;
-    async eventsLoader(dir) {
+    async eventLoader(dir) {
         const eventNames = new Set();
         const events = [];
         this.removeAllListeners();
