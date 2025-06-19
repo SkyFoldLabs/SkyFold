@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ButtonInteraction, Channel, ChannelSelectMenuInteraction, ChatInputCommandInteraction, ClientEvents, ContextMenuCommandBuilder as djsContextMenuCommandBuilder, ContextMenuCommandInteraction, GuildMember, Interaction, MentionableSelectMenuInteraction, Message, ModalSubmitInteraction, Role, RoleSelectMenuInteraction, SlashCommandBuilder as djsSlashCommandBuilder, StringSelectMenuInteraction, User, UserSelectMenuInteraction, RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
+import { AutocompleteInteraction, ButtonInteraction, Channel, ChannelSelectMenuInteraction, ChatInputCommandInteraction, ClientEvents, ContextMenuCommandBuilder as djsContextMenuCommandBuilder, ContextMenuCommandInteraction, GuildMember, Interaction, MentionableSelectMenuInteraction, Message, ModalSubmitInteraction, Role, RoleSelectMenuInteraction, SlashCommandBuilder as djsSlashCommandBuilder, StringSelectMenuInteraction, User, UserSelectMenuInteraction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandSubcommandsOnlyBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { Client } from '.';
 
 export type EventFile<Event extends keyof ClientEvents> = {
@@ -69,26 +69,28 @@ export class SlashCommandBuilder extends djsSlashCommandBuilder {
     public guilds?: string[]
     onlyForGuilds(...guilds: string[]){
         this.guilds = guilds
+        return this;
     }
 
     getJSON(){
-        return { ...this.toJSON(), guilds: this.guilds }
-    }
-}
+        return { ...this.toJSON(), guilds: this.guilds };
+    };
+};
 
 export class ContextMenuCommandBuilder extends djsContextMenuCommandBuilder {
     public guilds?: string[]
     onlyForGuilds(...guilds: string[]){
-        this.guilds = guilds
-    }
+        this.guilds = guilds;
+        return this;
+    };
 
     getJSON(){
-        return { ...this.toJSON(), guilds: this.guilds }
-    }
-}
+        return { ...this.toJSON(), guilds: this.guilds };
+    };
+};
 
 export type SlashCommandFile = {
-    data: SlashCommandBuilder;
+    data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
     code: (ctx: { 
         client: Client;
         int: ChatInputCommandInteraction

@@ -111,7 +111,7 @@ export async function PrefixCommandsHandler(client: Client, msg: Message){
 };
 
 
-export async function fetchMember(guild: Guild, identifier?: string): Promise<GuildMember | null> {
+export async function fetchMember(guild: Guild, identifier?: string | null): Promise<GuildMember | null> {
     if (!identifier) return null;
     let userId: string | undefined;
 
@@ -130,7 +130,7 @@ export async function fetchMember(guild: Guild, identifier?: string): Promise<Gu
 };
 
 
-export async function fetchUser(client: Client, identifier?: string): Promise<User | null> {
+export async function fetchUser(client: Client, identifier?: string | null): Promise<User | null> {
     if (!identifier) return null;
     let userId: string | undefined;
 
@@ -252,7 +252,7 @@ export async function putSlashes(client: Client) {
     const globalCmds: (ReturnType<SlashCommandBuilder['getJSON']> | ReturnType<ContextMenuCommandBuilder['getJSON']>)[] = [];
     const guildCmds: { guild: string; data: (ReturnType<SlashCommandBuilder['getJSON']> | ReturnType<ContextMenuCommandBuilder['getJSON']>)[] }[] = [];
     for(const cmd of commands.values()){
-        const data = cmd.data.getJSON();
+        const data = (cmd.data as SlashCommandBuilder).getJSON();
         if(!data.guilds) globalCmds.push(data);
         else {
             for(const guild of data.guilds){

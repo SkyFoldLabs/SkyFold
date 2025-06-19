@@ -1,0 +1,10 @@
+import { ChatInputCommandInteraction, Guild, GuildBasedChannel, GuildMember, Interaction, Message, Role, User } from "discord.js";
+import { Client } from ".";
+export declare function PrefixCommandsHandler(client: Client, msg: Message): Promise<void>;
+export declare function fetchMember(guild: Guild, identifier?: string | null): Promise<GuildMember | null>;
+export declare function fetchUser(client: Client, identifier?: string | null): Promise<User | null>;
+export declare function fetchChannel(guild: Guild, identifier?: string): Promise<GuildBasedChannel | null>;
+export declare function fetchRole(guild: Guild, identifier?: string): Promise<Role | null>;
+export declare function InteractionsCommandsHandler(client: Client, int: Interaction): Promise<void>;
+export declare function SlashCommandsHandler(client: Client, int: ChatInputCommandInteraction): Promise<void>;
+export declare function putSlashes(client: Client): Promise<void>;

@@ -24,10 +24,11 @@
     "test": "tsc && node __tests__"
   },
   "dependencies": {
-    "discord.js": "^14.19.3"
+    "typeorm": "^0.3.24"
   },
   "devDependencies": {
     "@types/node": "^22.15.24",
+    "discord.js": "^14.20.0",
     "typescript": "^5.8.3"
   }
 }

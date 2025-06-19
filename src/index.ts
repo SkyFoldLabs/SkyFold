@@ -1,46 +1,73 @@
-import { Client as DjsClient, Collection, ClientOptions as DjsClientOptions, ClientEvents, Message, ChatInputCommandInteraction, Interaction } from "discord.js";
-import { CommandFileRaw, ContextMenuCommandBuilder, createCommand, createEvent, InteractionCommandBuilder, PrefixedCommandBuilder, SlashCommandBuilder } from './types'
+import * as d from "discord.js";
+import { CommandFileRaw, ContextMenuCommandBuilder, createCommand, InteractionCommandBuilder, PrefixedCommandBuilder, SlashCommandBuilder } from './types'
 import { lstatSync, readdirSync } from "fs";
 import { join } from "path";
 import { InteractionsCommandsHandler, PrefixCommandsHandler, putSlashes, SlashCommandsHandler } from "./handlers";
-import { cwd } from "process";
+import { DataSource, DataSourceOptions } from "typeorm";
 
-type ClientOptions = DjsClientOptions  & {
-    prefixes?: string[];
-    customHandlers?: {
-        prefix?: (client: Client, msg: Message) => Promise<void> | void;
-        slash?: (client: Client, int: ChatInputCommandInteraction) => Promise<void> | void;
-        interactions?: (client: Client, int: Interaction) => Promise<void> | void;
+export class DataBase {
+    public db: DataSource;
+
+    public constructor(data: DataSourceOptions){
+        this.db = new DataSource(data);
+    };
+
+    public async init(){
+        this.db = await this.db.initialize();
+        return this;
     };
 };
 
-class Client extends DjsClient<true> {
-    public commands = new Collection<string, CommandFileRaw>();
+export type ClientOptions = d.ClientOptions  & {
+    prefixes?: string[];
+    customHandlers?: {
+        prefix?: (client: Client, msg: d.Message) => Promise<void> | void;
+        slash?: (client: Client, int: d.ChatInputCommandInteraction) => Promise<void> | void;
+        interactions?: (client: Client, int: d.Interaction) => Promise<void> | void;
+    };
+};
+
+export class Client extends d.Client<true> {
+    public commands = new d.Collection<string, CommandFileRaw>();
+    public db: Record<string, DataBase>;
+    public logger = {
+        info: console.info,
+        warn: console.warn,
+        error: console.error,
+        debug: console.debug
+    };
+
+    noop(...args: any[]){ return null; }
 
     constructor(public config: ClientOptions){
         super(config);
+        this.db = {}
+    };
+
+    private handlers(){
         const { prefix, slash, interactions } = {
-            prefix: config.customHandlers?.prefix ?? PrefixCommandsHandler,
-            slash: config.customHandlers?.slash ?? SlashCommandsHandler,
-            interactions: config.customHandlers?.interactions ?? InteractionsCommandsHandler,
+            prefix: this.config.customHandlers?.prefix ?? PrefixCommandsHandler,
+            slash: this.config.customHandlers?.slash ?? SlashCommandsHandler,
+            interactions: this.config.customHandlers?.interactions ?? InteractionsCommandsHandler,
         }
         this.on("messageCreate", (msg) => prefix(this, msg));
         this.on("interactionCreate", (int) => { if(int.isChatInputCommand()) slash(this, int) });
         this.on("interactionCreate", (int) => interactions(this, int));
-        this.on("ready", () => putSlashes(this))
-    };
+        this.once("ready", () => putSlashes(this))
+    }
 
-    public async eventLoader(dir:string){
-        const eventNames = new Set<keyof ClientEvents>();
-        const events: { name: keyof ClientEvents, code: any }[] = [];
+    public async eventLoader(...dir: string[]){
+        const eventNames = new Set<keyof d.ClientEvents>();
+        const events: { name: keyof d.ClientEvents, code: any }[] = [];
         this.removeAllListeners();
+        this.handlers()
 
-        this.loader(dir, (event) =>  {
+        this.loader((event) =>  {
             if(event.once) return this.once(event.name, (...args: any) => event.code(this, ...args));
             const { name, code } = event;
             eventNames.add(name);
             events.push({name, code});
-        });
+        }, ...dir);
 
         for(const name of eventNames){
             const codes = events.filter(s => s.name == name);
@@ -52,10 +79,10 @@ class Client extends DjsClient<true> {
         };
     };
 
-    public async commandLoader(dir:string){
+    public async commandLoader(...dir: string[]){
         this.commands.clear();
 
-        this.loader(dir, (data: ReturnType<typeof createCommand> | ReturnType<typeof createCommand>[], path) => {
+        this.loader((data: ReturnType<typeof createCommand> | ReturnType<typeof createCommand>[], path) => {
             data = Array.isArray(data) ? data : [data];
             let i = 0;
             for(const command of data){
@@ -68,34 +95,28 @@ class Client extends DjsClient<true> {
                 else type = "unknown";
                 this.commands.set(`${path}(${i})`, {data, code, type} as any); i++;
             };
-        });
+        }, ...dir);
     };
 
-    private loader(dir: string, code: (data: any, path?:string) => Promise<any> | any) {
-        const root = cwd(),
-        files = readdirSync(join(root, dir));
+    private loader(code: (data: any, path?:string) => Promise<any> | any, ...dir: string[]) {
+        const files = readdirSync(join(...dir));
         for (const file of files){
-            const stat = lstatSync(join(root, dir, file));
+            try {
             
-            if(stat.isDirectory()) this.loader(join(dir, file), code);
+                const stat = lstatSync(join(...dir, file));
+                
+                if(stat.isDirectory()) this.loader(code, join(...dir, file));
             else if(this.isValidFile(file)){
-                delete require.cache[require.resolve(join(root, dir, file))];
-                code(require(join(root, dir, file)).data, join(root, dir, file));
+                    delete require.cache[require.resolve(join(...dir, file))];
+                    code(require(join(...dir, file)).data, join(...dir, file));
             };
+            } catch(_){ this.logger.warn("Failed to load", join(...dir, file)) }
         };
     };
 
     private isValidFile = (file: string) => file.endsWith('.js');
+}
 
-    public static AntiCrash(){
-        process.on('uncaughtException', (err) => {
-            console.error('An uncaught exception occurred:', err);
-        });
-
-        process.on('unhandledRejection', (reason) => {
-            console.error('An unhandled promise rejection occurred:', reason);
-        });
-    };
-};
-
-export { createCommand, createEvent, Client, PrefixedCommandBuilder, InteractionCommandBuilder, ContextMenuCommandBuilder, SlashCommandBuilder, ClientOptions };
+export * from './handlers';
+export * from './types';
+export * from "typeorm";

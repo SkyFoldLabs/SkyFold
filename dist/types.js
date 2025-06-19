@@ -45,22 +45,29 @@ class SlashCommandBuilder extends discord_js_1.SlashCommandBuilder {
     guilds;
     onlyForGuilds(...guilds) {
         this.guilds = guilds;
+        return this;
     }
     getJSON() {
         return { ...this.toJSON(), guilds: this.guilds };
     }
+    ;
 }
 exports.SlashCommandBuilder = SlashCommandBuilder;
+;
 class ContextMenuCommandBuilder extends discord_js_1.ContextMenuCommandBuilder {
     guilds;
     onlyForGuilds(...guilds) {
         this.guilds = guilds;
+        return this;
     }
+    ;
     getJSON() {
         return { ...this.toJSON(), guilds: this.guilds };
     }
+    ;
 }
 exports.ContextMenuCommandBuilder = ContextMenuCommandBuilder;
+;
 var ParamType;
 (function (ParamType) {
     ParamType["String"] = "string";

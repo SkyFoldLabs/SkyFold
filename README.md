@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="" alt="SkyFold Asset" width="150"></p>
+  <img src="https://raw.githubusercontent.com/aggelos-007/SkyFold/refs/heads/main/assets/skyfold.png?raw=true" alt="SkyFold Asset" width="150"></p>
 <h1 align="center">SkyFold</h1>
 <p align="center">SkyFold, where discord.js handlers are on another level. The best TypeScript discord.js handlers that are also super light to install.</p>
 <br>
@@ -20,11 +20,11 @@
 ## Installation
 Installing the stable version from npm.
 ```bash
-npm i skyfold@latest
+npm i skyfold@latest discord.js
 ```
 Or you can use the latest and also the dev version through npm
 ```bash
-npm i github:aggelos-007/skyfold
+npm i github:aggelos-007/skyfold discord.js
 ```
 After you installed the package you are ready to start you journey building your discord bot! You can initiate the client like discord.js has!
 ```ts

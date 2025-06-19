@@ -1,47 +1,103 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SlashCommandBuilder = exports.ContextMenuCommandBuilder = exports.InteractionCommandBuilder = exports.PrefixedCommandBuilder = exports.Client = exports.createEvent = exports.createCommand = void 0;
-const discord_js_1 = require("discord.js");
+exports.Client = exports.DataBase = void 0;
+const d = __importStar(require("discord.js"));
 const types_1 = require("./types");
-Object.defineProperty(exports, "ContextMenuCommandBuilder", { enumerable: true, get: function () { return types_1.ContextMenuCommandBuilder; } });
-Object.defineProperty(exports, "createCommand", { enumerable: true, get: function () { return types_1.createCommand; } });
-Object.defineProperty(exports, "createEvent", { enumerable: true, get: function () { return types_1.createEvent; } });
-Object.defineProperty(exports, "InteractionCommandBuilder", { enumerable: true, get: function () { return types_1.InteractionCommandBuilder; } });
-Object.defineProperty(exports, "PrefixedCommandBuilder", { enumerable: true, get: function () { return types_1.PrefixedCommandBuilder; } });
-Object.defineProperty(exports, "SlashCommandBuilder", { enumerable: true, get: function () { return types_1.SlashCommandBuilder; } });
 const fs_1 = require("fs");
 const path_1 = require("path");
 const handlers_1 = require("./handlers");
-const process_1 = require("process");
-class Client extends discord_js_1.Client {
+const typeorm_1 = require("typeorm");
+class DataBase {
+    db;
+    constructor(data) {
+        this.db = new typeorm_1.DataSource(data);
+    }
+    ;
+    async init() {
+        this.db = await this.db.initialize();
+        return this;
+    }
+    ;
+}
+exports.DataBase = DataBase;
+;
+class Client extends d.Client {
     config;
-    commands = new discord_js_1.Collection();
+    commands = new d.Collection();
+    db;
+    logger = {
+        info: console.info,
+        warn: console.warn,
+        error: console.error,
+        debug: console.debug
+    };
+    noop(...args) { return null; }
     constructor(config) {
         super(config);
         this.config = config;
+        this.db = {};
+    }
+    ;
+    handlers() {
         const { prefix, slash, interactions } = {
-            prefix: config.customHandlers?.prefix ?? handlers_1.PrefixCommandsHandler,
-            slash: config.customHandlers?.slash ?? handlers_1.SlashCommandsHandler,
-            interactions: config.customHandlers?.interactions ?? handlers_1.InteractionsCommandsHandler,
+            prefix: this.config.customHandlers?.prefix ?? handlers_1.PrefixCommandsHandler,
+            slash: this.config.customHandlers?.slash ?? handlers_1.SlashCommandsHandler,
+            interactions: this.config.customHandlers?.interactions ?? handlers_1.InteractionsCommandsHandler,
         };
         this.on("messageCreate", (msg) => prefix(this, msg));
         this.on("interactionCreate", (int) => { if (int.isChatInputCommand())
             slash(this, int); });
         this.on("interactionCreate", (int) => interactions(this, int));
-        this.on("ready", () => (0, handlers_1.putSlashes)(this));
+        this.once("ready", () => (0, handlers_1.putSlashes)(this));
     }
-    ;
-    async eventLoader(dir) {
+    async eventLoader(...dir) {
         const eventNames = new Set();
         const events = [];
         this.removeAllListeners();
-        this.loader(dir, (event) => {
+        this.handlers();
+        this.loader((event) => {
             if (event.once)
                 return this.once(event.name, (...args) => event.code(this, ...args));
             const { name, code } = event;
             eventNames.add(name);
             events.push({ name, code });
-        });
+        }, ...dir);
         for (const name of eventNames) {
             const codes = events.filter(s => s.name == name);
             this.on(name, (...args) => {
@@ -54,9 +110,9 @@ class Client extends discord_js_1.Client {
         ;
     }
     ;
-    async commandLoader(dir) {
+    async commandLoader(...dir) {
         this.commands.clear();
-        this.loader(dir, (data, path) => {
+        this.loader((data, path) => {
             data = Array.isArray(data) ? data : [data];
             let i = 0;
             for (const command of data) {
@@ -76,34 +132,32 @@ class Client extends discord_js_1.Client {
                 i++;
             }
             ;
-        });
+        }, ...dir);
     }
     ;
-    loader(dir, code) {
-        const root = (0, process_1.cwd)(), files = (0, fs_1.readdirSync)((0, path_1.join)(root, dir));
+    loader(code, ...dir) {
+        const files = (0, fs_1.readdirSync)((0, path_1.join)(...dir));
         for (const file of files) {
-            const stat = (0, fs_1.lstatSync)((0, path_1.join)(root, dir, file));
-            if (stat.isDirectory())
-                this.loader((0, path_1.join)(dir, file), code);
-            else if (this.isValidFile(file)) {
-                delete require.cache[require.resolve((0, path_1.join)(root, dir, file))];
-                code(require((0, path_1.join)(root, dir, file)).data, (0, path_1.join)(root, dir, file));
+            try {
+                const stat = (0, fs_1.lstatSync)((0, path_1.join)(...dir, file));
+                if (stat.isDirectory())
+                    this.loader(code, (0, path_1.join)(...dir, file));
+                else if (this.isValidFile(file)) {
+                    delete require.cache[require.resolve((0, path_1.join)(...dir, file))];
+                    code(require((0, path_1.join)(...dir, file)).data, (0, path_1.join)(...dir, file));
+                }
+                ;
             }
-            ;
+            catch (_) {
+                this.logger.warn("Failed to load", (0, path_1.join)(...dir, file));
+            }
         }
         ;
     }
     ;
     isValidFile = (file) => file.endsWith('.js');
-    static AntiCrash() {
-        process.on('uncaughtException', (err) => {
-            console.error('An uncaught exception occurred:', err);
-        });
-        process.on('unhandledRejection', (reason) => {
-            console.error('An unhandled promise rejection occurred:', reason);
-        });
-    }
-    ;
 }
 exports.Client = Client;
-;
+__exportStar(require("./handlers"), exports);
+__exportStar(require("./types"), exports);
+__exportStar(require("typeorm"), exports);
