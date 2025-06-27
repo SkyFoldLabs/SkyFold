@@ -13,6 +13,8 @@ const types_1 = require("./types");
 async function runCommand(data) {
     const { client, msg, rawArgs } = data;
     for (const cmd of data.commands.values()) {
+        if (!(await cmd.data.preRun(client, msg)))
+            continue;
         const { params } = cmd.data;
         const args = [];
         if (params) {

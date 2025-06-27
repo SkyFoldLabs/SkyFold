@@ -58,13 +58,13 @@ export declare class SlashCommandBuilder extends djsSlashCommandBuilder {
         guilds: string[] | undefined;
         type?: import("discord.js").ApplicationCommandType.ChatInput | undefined;
         description: string;
-        nsfw?: boolean | undefined;
         name: string;
         name_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         description_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         options?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").APIApplicationCommandOption[] | undefined>;
         dm_permission?: boolean | undefined;
         default_permission?: boolean | undefined;
+        nsfw?: boolean | undefined;
         handler?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").EntryPointCommandHandlerType | undefined>;
         contexts?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").InteractionContextType[] | undefined>;
         default_member_permissions?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<string | null | undefined>;
@@ -77,13 +77,13 @@ export declare class ContextMenuCommandBuilder extends djsContextMenuCommandBuil
     getJSON(): {
         guilds: string[] | undefined;
         type: import("discord.js").ApplicationCommandType.Message | import("discord.js").ApplicationCommandType.User;
-        nsfw?: boolean | undefined;
         name: string;
         name_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         description_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         options?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").APIApplicationCommandOption[] | undefined>;
         dm_permission?: boolean | undefined;
         default_permission?: boolean | undefined;
+        nsfw?: boolean | undefined;
         handler?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").EntryPointCommandHandlerType | undefined>;
         contexts?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").InteractionContextType[] | undefined>;
         default_member_permissions?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<string | null | undefined>;
@@ -158,6 +158,7 @@ export declare class PrefixedCommandBuilder<Params extends ParamBuilder[] = []> 
     description?: string;
     params?: Params;
     alwaysReply?: boolean;
+    preRun: (client: Client, msg: Message) => Promise<boolean> | boolean;
     constructor(data?: Partial<PrefixCommandData> & {
         params: Params;
     });
@@ -173,6 +174,7 @@ export declare class PrefixedCommandBuilder<Params extends ParamBuilder[] = []> 
         params: Params | undefined;
         alwaysReply: boolean | undefined;
     };
+    validateCmd(handler: (client: Client, msg: Message) => Promise<boolean> | boolean): this;
 }
 export type ParamRequired<Type extends ParamType, Req extends boolean> = Req extends true ? ParamTypeMap[Type] : ParamTypeMap[Type] | null;
 export type ParamReturnType<Type extends ParamType = ParamType, Required extends boolean = boolean, Rest extends boolean = boolean> = Rest extends true ? ParamRequired<Type, true>[] : ParamRequired<Type, Required>;

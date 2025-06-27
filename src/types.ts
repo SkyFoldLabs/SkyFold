@@ -183,6 +183,7 @@ export class PrefixedCommandBuilder<Params extends ParamBuilder[] = []> {
     public description?: string;
     public params?: Params;
     public alwaysReply?: boolean;
+    public preRun: (client: Client, msg: Message) => Promise<boolean> | boolean = () => true;
 
     constructor(data: Partial<PrefixCommandData> & { params: Params } = {} as any) {
         this.name = data.name;
@@ -213,6 +214,11 @@ export class PrefixedCommandBuilder<Params extends ParamBuilder[] = []> {
     toJSON(){
         const { name, aliases, description, params, alwaysReply } = this;
         return { name, aliases, description, params, alwaysReply };
+    };
+
+    validateCmd(handler: (client: Client, msg: Message) => Promise<boolean> | boolean) {
+        this.preRun = handler;
+        return this;
     };
 };
 

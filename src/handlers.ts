@@ -6,6 +6,7 @@ import { ContextCommandFileRaw, ContextMenuCommandBuilder, InteractionCommandFil
 async function runCommand(data: { commands: Collection<string, PrefixCommandFileRaw>; client: Client; msg: Message; rawArgs: string[]; }){
     const { client, msg, rawArgs } = data
     for(const cmd of data.commands.values()){
+        if(!(await cmd.data.preRun(client, msg))) continue;
         const { params } = cmd.data;
         const args: any[] = [];
         if(params){

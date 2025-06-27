@@ -135,6 +135,7 @@ class PrefixedCommandBuilder {
     description;
     params;
     alwaysReply;
+    preRun = () => true;
     constructor(data = {}) {
         this.name = data.name;
         this.aliases = data.aliases;
@@ -170,6 +171,11 @@ class PrefixedCommandBuilder {
     toJSON() {
         const { name, aliases, description, params, alwaysReply } = this;
         return { name, aliases, description, params, alwaysReply };
+    }
+    ;
+    validateCmd(handler) {
+        this.preRun = handler;
+        return this;
     }
     ;
 }
