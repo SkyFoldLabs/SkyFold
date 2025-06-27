@@ -72,7 +72,10 @@ createCommand({
     .setAliases(...string) // Optional
     .setDescription(string) // Optional
     .setParams(...ParamBuilder) // Optional, used only for when you want params
-    .setAlwaysReply(boolean); // Optional, used only when you want unprefixed commands that get triggered with any message
+    .setAlwaysReply(boolean)
+    .validateCmd( 
+        (client: Client, msg: Message) => Promise<boolean> | boolean
+    ), // Optional, used only when you want to run some code before running the code and if you want to prevent it from working by returning a boolean
     code: (ctx: {
         client: Client;
         msg: Message;
