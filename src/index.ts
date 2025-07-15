@@ -3,20 +3,6 @@ import { CommandFileRaw, ContextMenuCommandBuilder, createCommand, InteractionCo
 import { lstatSync, readdirSync } from "fs";
 import { join } from "path";
 import { InteractionsCommandsHandler, PrefixCommandsHandler, putSlashes, SlashCommandsHandler } from "./handlers";
-import { DataSource, DataSourceOptions } from "typeorm";
-
-export class DataBase {
-    public db: DataSource;
-
-    public constructor(data: DataSourceOptions){
-        this.db = new DataSource(data);
-    };
-
-    public async init(){
-        this.db = await this.db.initialize();
-        return this;
-    };
-};
 
 export type ClientOptions = d.ClientOptions  & {
     prefixes?: string[];
@@ -29,7 +15,6 @@ export type ClientOptions = d.ClientOptions  & {
 
 export class Client extends d.Client<true> {
     public commands = new d.Collection<string, CommandFileRaw>();
-    public db: Record<string, DataBase>;
     public logger = {
         info: console.info,
         warn: console.warn,
@@ -41,7 +26,6 @@ export class Client extends d.Client<true> {
 
     constructor(public config: ClientOptions){
         super(config);
-        this.db = {}
     };
 
     private handlers(){
@@ -119,4 +103,3 @@ export class Client extends d.Client<true> {
 
 export * from './handlers';
 export * from './types';
-export * from "typeorm";

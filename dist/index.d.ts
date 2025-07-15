@@ -1,11 +1,5 @@
 import * as d from "discord.js";
 import { CommandFileRaw } from './types';
-import { DataSource, DataSourceOptions } from "typeorm";
-export declare class DataBase {
-    db: DataSource;
-    constructor(data: DataSourceOptions);
-    init(): Promise<this>;
-}
 export type ClientOptions = d.ClientOptions & {
     prefixes?: string[];
     customHandlers?: {
@@ -17,7 +11,6 @@ export type ClientOptions = d.ClientOptions & {
 export declare class Client extends d.Client<true> {
     config: ClientOptions;
     commands: d.Collection<string, CommandFileRaw>;
-    db: Record<string, DataBase>;
     logger: {
         info: {
             (...data: any[]): void;
@@ -46,4 +39,3 @@ export declare class Client extends d.Client<true> {
 }
 export * from './handlers';
 export * from './types';
-export * from "typeorm";

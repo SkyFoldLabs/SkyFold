@@ -58,13 +58,13 @@ export declare class SlashCommandBuilder extends djsSlashCommandBuilder {
         guilds: string[] | undefined;
         type?: import("discord.js").ApplicationCommandType.ChatInput | undefined;
         description: string;
+        nsfw?: boolean | undefined;
         name: string;
         name_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         description_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         options?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").APIApplicationCommandOption[] | undefined>;
         dm_permission?: boolean | undefined;
         default_permission?: boolean | undefined;
-        nsfw?: boolean | undefined;
         handler?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").EntryPointCommandHandlerType | undefined>;
         contexts?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").InteractionContextType[] | undefined>;
         default_member_permissions?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<string | null | undefined>;
@@ -77,13 +77,13 @@ export declare class ContextMenuCommandBuilder extends djsContextMenuCommandBuil
     getJSON(): {
         guilds: string[] | undefined;
         type: import("discord.js").ApplicationCommandType.Message | import("discord.js").ApplicationCommandType.User;
+        nsfw?: boolean | undefined;
         name: string;
         name_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         description_localizations?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<Partial<Record<import("discord.js").Locale, string | null>> | null | undefined>;
         options?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").APIApplicationCommandOption[] | undefined>;
         dm_permission?: boolean | undefined;
         default_permission?: boolean | undefined;
-        nsfw?: boolean | undefined;
         handler?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").EntryPointCommandHandlerType | undefined>;
         contexts?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<import("discord.js").InteractionContextType[] | undefined>;
         default_member_permissions?: import("discord.js")._AddUndefinedToPossiblyUndefinedPropertiesOfInterface<string | null | undefined>;

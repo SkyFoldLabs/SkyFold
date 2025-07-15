@@ -36,31 +36,15 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Client = exports.DataBase = void 0;
+exports.Client = void 0;
 const d = __importStar(require("discord.js"));
 const types_1 = require("./types");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const handlers_1 = require("./handlers");
-const typeorm_1 = require("typeorm");
-class DataBase {
-    db;
-    constructor(data) {
-        this.db = new typeorm_1.DataSource(data);
-    }
-    ;
-    async init() {
-        this.db = await this.db.initialize();
-        return this;
-    }
-    ;
-}
-exports.DataBase = DataBase;
-;
 class Client extends d.Client {
     config;
     commands = new d.Collection();
-    db;
     logger = {
         info: console.info,
         warn: console.warn,
@@ -71,7 +55,6 @@ class Client extends d.Client {
     constructor(config) {
         super(config);
         this.config = config;
-        this.db = {};
     }
     ;
     handlers() {
@@ -160,4 +143,3 @@ class Client extends d.Client {
 exports.Client = Client;
 __exportStar(require("./handlers"), exports);
 __exportStar(require("./types"), exports);
-__exportStar(require("typeorm"), exports);
