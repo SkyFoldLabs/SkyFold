@@ -63,11 +63,13 @@ class Client extends d.Client {
             slash: this.config.customHandlers?.slash ?? handlers_1.SlashCommandsHandler,
             interactions: this.config.customHandlers?.interactions ?? handlers_1.InteractionsCommandsHandler,
         };
-        this.on("messageCreate", (msg) => prefix(this, msg));
+        if (this.config.prefixes?.length)
+            this.on("messageCreate", (msg) => prefix(this, msg));
         this.on("interactionCreate", (int) => { if (int.isChatInputCommand())
-            slash(this, int); });
-        this.on("interactionCreate", (int) => interactions(this, int));
-        this.once("ready", () => (0, handlers_1.putSlashes)(this));
+            slash(this, int);
+        else
+            interactions(this, int); });
+        this.once("clientReady", () => (0, handlers_1.putSlashes)(this));
     }
     async eventLoader(...dir) {
         const eventNames = new Set();

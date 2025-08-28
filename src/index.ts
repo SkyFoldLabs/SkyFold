@@ -34,10 +34,9 @@ export class Client extends d.Client<true> {
             slash: this.config.customHandlers?.slash ?? SlashCommandsHandler,
             interactions: this.config.customHandlers?.interactions ?? InteractionsCommandsHandler,
         }
-        this.on("messageCreate", (msg) => prefix(this, msg));
-        this.on("interactionCreate", (int) => { if(int.isChatInputCommand()) slash(this, int) });
-        this.on("interactionCreate", (int) => interactions(this, int));
-        this.once("ready", () => putSlashes(this))
+        if(this.config.prefixes?.length) this.on("messageCreate", (msg) => prefix(this, msg));
+        this.on("interactionCreate", (int) => { if(int.isChatInputCommand()) slash(this, int); else interactions(this, int) });
+        this.once("clientReady", () => putSlashes(this))
     }
 
     public async eventLoader(...dir: string[]){
