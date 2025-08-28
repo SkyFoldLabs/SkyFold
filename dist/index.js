@@ -63,7 +63,7 @@ class Client extends d.Client {
             slash: this.config.customHandlers?.slash ?? handlers_1.SlashCommandsHandler,
             interactions: this.config.customHandlers?.interactions ?? handlers_1.InteractionsCommandsHandler,
         };
-        if (this.config.prefixes?.length)
+        if (this.options.intents.has("MessageContent"))
             this.on("messageCreate", (msg) => prefix(this, msg));
         this.on("interactionCreate", (int) => { if (int.isChatInputCommand())
             slash(this, int);

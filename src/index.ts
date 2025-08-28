@@ -34,7 +34,7 @@ export class Client extends d.Client<true> {
             slash: this.config.customHandlers?.slash ?? SlashCommandsHandler,
             interactions: this.config.customHandlers?.interactions ?? InteractionsCommandsHandler,
         }
-        if(this.config.prefixes?.length) this.on("messageCreate", (msg) => prefix(this, msg));
+        if(this.options.intents.has("MessageContent")) this.on("messageCreate", (msg) => prefix(this, msg));
         this.on("interactionCreate", (int) => { if(int.isChatInputCommand()) slash(this, int); else interactions(this, int) });
         this.once("clientReady", () => putSlashes(this))
     }
